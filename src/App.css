@@ -1,0 +1,37 @@
+.ufo-container {
+  position: relative;
+  width: 100vw;
+  height: 100vh; 
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.ufo {
+  position: absolute;
+  animation: moveAcross 1s linear forwards, pulse 1s infinite alternate;
+  animation-duration: 1s, 1s;
+  animation-delay: 0s, 1s;
+}
+
+@keyframes moveAcross {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(0%);
+  }
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
