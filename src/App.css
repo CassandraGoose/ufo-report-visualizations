@@ -35,3 +35,8 @@
     transform: scale(1);
   }
 }
+
+.svgChartContainer {
+  max-width: 100%;
+  height: auto;
+}
