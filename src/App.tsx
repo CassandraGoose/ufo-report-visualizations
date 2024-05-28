@@ -19,12 +19,6 @@ export interface Sighting {
 
 const MARGIN = { top: 10, right: 10, bottom: 20, left: 40 };
 
-type StackedAreaChartProps = {
-  width: number;
-  height: number;
-  ufoData: { [key: string]: number | string }[];
-};
-
 function App() {
   const [loading, setLoading] = useState(false);
   const [ufoData, setUfoData] = useState<Sighting[]>([]);
@@ -45,31 +39,10 @@ function App() {
         return item.date > new Date("04/01/2024")
       })
       setUfoData(newData);
-
-      // const keys = d3.union(newData.map((d) => d.shape));
-      // const index = d3.index(
-      //   newData,
-      //   (d) => d.date,
-      //   (d) => d.shape
-      // );
-      // console.log({ index });
-      // const stackSeries = d3
-      //   .stack()
-      //   .keys(keys)
-      //   .value(([, group], key) => {
-      //     // console.log('key', key);
-      //     const item = group.get(key);
-      //     // console.log({item});
-      //     if (item) return item.count
-      //     return 0
-      //     })(index);
-      // console.log({stackSeries});      
-      // console.log("setufodata");
     };
 
     getData();
   }, []);
-  // Data Wrangling: stack the data
   const keys = d3.union(ufoData.map((d) => d.shape));
   const index = d3.index(
     ufoData,
@@ -80,10 +53,9 @@ function App() {
     .stack()
     .keys(keys)
     .value(([, group], key) => {
-      // data might look like shit because we are skipping some because group.get(key) is undefined the data is undefined in there. maybe check that .index() isn't having a fit.
       return group.get(key)?.count || 0})(index);
   const series = stackSeries;
-  // Y axis
+
   const yScale = useMemo(() => {
     return d3
       .scaleLinear()
@@ -91,7 +63,6 @@ function App() {
       .range([boundsHeight, 0]);
   }, [boundsHeight]);
 
-  // X axis
   const [xMin, xMax] = d3.extent(ufoData, (d) => d.date);
   console.log({ xMin, xMax, ufoData });
   const xScale = useMemo(() => {
@@ -111,14 +82,13 @@ function App() {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         .area<any>()
         .x((d) => {
-          // console.log("data: ", d.data[0], "x scale: ", xScale(d.data[0]));
           return xScale(d.data[0]);
         })
         .y0((d) => yScale(d[0]))
         .y1((d) => yScale(d[1]))
     );
   }, [xScale, yScale]);
-  // Render the X and Y axis using d3.js, not react
+
   useEffect(() => {
     const svgElement = d3.select(axesRef.current);
     svgElement.selectAll("*").remove();
@@ -132,10 +102,8 @@ function App() {
     svgElement.append("g").call(yAxisGenerator);
   }, [xScale, yScale, boundsHeight]);
 
-  // Build the line
-
   const allPath = series.map((serie, i) => {
-    // console.log("serie", serie);
+
     const path = areaBuilder(serie);
     return (
       <path
@@ -178,18 +146,3 @@ function App() {
 }
 
 export default App;
-
-// {!loading && (
-//   <svg
-//     width="100%"
-//     height="90%"
-//     viewBox="0, 0, 100%, 90%"
-//     className="svgChartContainer"
-//   >
-//     {/* data */}
-//     {/* translate margin left margin top, pick whatever */}
-//     <g transform="translate(40, 0)" width="982" height="500">{}</g>
-//     {/* axes */}
-//     <g width="982" height="500" ref={axesRef} transform="translate(40, 0)" />
-//   </svg>
-// )}
