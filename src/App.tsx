@@ -1,5 +1,3 @@
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-nocheck
 import { useState, useRef, useEffect, useMemo } from "react";
 import * as d3 from "d3";
 
@@ -7,7 +5,7 @@ import "./App.css";
 import ufo from "./assets/ufo.png";
 
 export interface Sighting {
-  sightingDate: string;
+  date: string | Date;
   city: string;
   state: string;
   country: string;
@@ -15,6 +13,7 @@ export interface Sighting {
   summary: null | string;
   reportedDate: string;
   explanation: null | string;
+  count: number;
 }
 
 const MARGIN = { top: 10, right: 10, bottom: 20, left: 40 };
@@ -32,12 +31,14 @@ function App() {
     const getData = async () => {
       const response = await fetch("./byDatesOfShapes.json");
       const data = await response.json();
-      const newData = data.map((item) => {
-        item.date = new Date(item.date);
-        return item;
-      }).filter((item) => {
-        return item.date > new Date("04/01/2024")
-      })
+      const newData = data
+        .map((item: Sighting) => {
+          item.date = new Date(item.date);
+          return item;
+        })
+        .filter((item: Sighting) => {
+          return item.date > new Date("04/01/2024");
+        });
       setUfoData(newData);
     };
 
@@ -48,22 +49,27 @@ function App() {
     ufoData,
     (d) => d.date,
     (d) => d.shape
-  );
+  ) as unknown as Iterable<{ [key: string]: number; }>;
+
   const stackSeries = d3
     .stack()
     .keys(keys)
-    .value(([, group], key) => {
-      return group.get(key)?.count || 0})(index);
+    .value((data, key) => {
+      const group = data[1] as unknown as Map<string, Sighting>;
+      return group.get(key)?.count || 0;
+    })(index);
   const series = stackSeries;
+
+  const maxValue = d3.max(series, (d) => d3.max(d, (d) => d[1]));
 
   const yScale = useMemo(() => {
     return d3
       .scaleLinear()
-      .domain([0, d3.max(series, (d) => d3.max(d, (d) => d[1]))])
+      .domain([0, maxValue || 0])
       .range([boundsHeight, 0]);
-  }, [boundsHeight]);
+  }, [boundsHeight, maxValue]);
 
-  const [xMin, xMax] = d3.extent(ufoData, (d) => d.date);
+  const [xMin, xMax] = d3.extent(ufoData, (d: Sighting) => d.date as Date);
   console.log({ xMin, xMax, ufoData });
   const xScale = useMemo(() => {
     return d3.scaleUtc([xMin || 0, xMax || 0], [0, boundsWidth]);
@@ -77,16 +83,14 @@ function App() {
   );
 
   const areaBuilder = useMemo(() => {
-    return (
-      d3
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        .area<any>()
-        .x((d) => {
-          return xScale(d.data[0]);
-        })
-        .y0((d) => yScale(d[0]))
-        .y1((d) => yScale(d[1]))
-    );
+    type areaData = number[] & { data: [Date, Map<number, string>] };
+    return d3
+      .area<areaData>()
+      .x((d) => {
+        return xScale(d.data[0]);
+      })
+      .y0((d) => yScale(d[0]))
+      .y1((d) => yScale(d[1]));
   }, [xScale, yScale]);
 
   useEffect(() => {
@@ -103,7 +107,7 @@ function App() {
   }, [xScale, yScale, boundsHeight]);
 
   const allPath = series.map((serie, i) => {
-
+    // @ts-expect-error: It's not worth the time at this moment to figure out the type when typing with D3 area already so ridiculous.
     const path = areaBuilder(serie);
     return (
       <path
