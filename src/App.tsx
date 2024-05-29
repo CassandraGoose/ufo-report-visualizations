@@ -5,7 +5,7 @@ import "./App.css";
 import ufo from "./assets/ufo.png";
 
 export interface Sighting {
-  date: string | Date;
+  year: string;
   city: string;
   state: string;
   country: string;
@@ -16,49 +16,41 @@ export interface Sighting {
   count: number;
 }
 
-const MARGIN = { top: 10, right: 10, bottom: 20, left: 40 };
+const MARGIN = { top: 50, right: 50, bottom: 60, left: 80 };
 
 function App() {
+  const { innerWidth: width, innerHeight: height } = window;
   const [loading, setLoading] = useState(false);
   const [ufoData, setUfoData] = useState<Sighting[]>([]);
   const axesRef = useRef(null);
-  const [height, setHeight] = useState(500);
-  const [width, setWidth] = useState(928);
   const boundsWidth = width - MARGIN.right - MARGIN.left;
   const boundsHeight = height - MARGIN.top - MARGIN.bottom;
 
   useEffect(() => {
     const getData = async () => {
-      const response = await fetch("./byDatesOfShapes.json");
+      const response = await fetch("./byYearsOfShapes.json");
       const data = await response.json();
-      const newData = data
-        .map((item: Sighting) => {
-          item.date = new Date(item.date);
-          return item;
-        })
-        .filter((item: Sighting) => {
-          return item.date > new Date("04/01/2024");
-        });
-      setUfoData(newData);
+      setUfoData(data);
     };
 
     getData();
   }, []);
+
   const keys = d3.union(ufoData.map((d) => d.shape));
+
   const index = d3.index(
     ufoData,
-    (d) => d.date,
+    (d) => d.year,
     (d) => d.shape
-  ) as unknown as Iterable<{ [key: string]: number; }>;
+  ) as unknown as Iterable<{ [key: string]: number }>;
 
-  const stackSeries = d3
+  const series = d3
     .stack()
     .keys(keys)
     .value((data, key) => {
       const group = data[1] as unknown as Map<string, Sighting>;
       return group.get(key)?.count || 0;
     })(index);
-  const series = stackSeries;
 
   const maxValue = d3.max(series, (d) => d3.max(d, (d) => d[1]));
 
@@ -69,29 +61,12 @@ function App() {
       .range([boundsHeight, 0]);
   }, [boundsHeight, maxValue]);
 
-  const [xMin, xMax] = d3.extent(ufoData, (d: Sighting) => d.date as Date);
-  console.log({ xMin, xMax, ufoData });
   const xScale = useMemo(() => {
-    return d3.scaleUtc([xMin || 0, xMax || 0], [0, boundsWidth]);
-  }, [boundsWidth, xMin, xMax]);
-
-  console.log(
-    "xScale domain:",
-    xScale.domain(),
-    "xScale range:",
-    xScale.range()
-  );
-
-  const areaBuilder = useMemo(() => {
-    type areaData = number[] & { data: [Date, Map<number, string>] };
     return d3
-      .area<areaData>()
-      .x((d) => {
-        return xScale(d.data[0]);
-      })
-      .y0((d) => yScale(d[0]))
-      .y1((d) => yScale(d[1]));
-  }, [xScale, yScale]);
+      .scaleBand()
+      .domain(ufoData.map((d) => d.year))
+      .range([0, boundsWidth]);
+  }, [boundsWidth, ufoData]);
 
   useEffect(() => {
     const svgElement = d3.select(axesRef.current);
@@ -107,19 +82,66 @@ function App() {
   }, [xScale, yScale, boundsHeight]);
 
   const allPath = series.map((serie, i) => {
-    // @ts-expect-error: It's not worth the time at this moment to figure out the type when typing with D3 area already so ridiculous.
-    const path = areaBuilder(serie);
+    // let y = series.find((d) => d.key === sighting.shape)?.find((d) => d.data[0].toString() === sighting.year)?.[1];
+    const sighting = ufoData.find((d) => d.shape === serie.key);
     return (
-      <path
-        key={i}
-        d={path}
-        opacity={1}
-        stroke="black"
-        fill="#9a6fb0"
-        fillOpacity={i / 10 + 0.1}
-      />
+      <g key={i}>
+        {serie.map((group, j) => {
+          return (
+            <g>
+              <g key={sighting!.year + sighting!.shape}>
+              <text
+                y={yScale(group[1]) + (yScale(group[0]) - yScale(group[1]))/2}
+                x={xScale(group.data[0].toString())! +((xScale.bandwidth()/2))}
+                textAnchor="middle"
+                alignmentBaseline="central"
+                fontSize={12}
+                opacity={yScale(group[1]) > 90 ? 1 : 0}
+              >
+                {sighting!.shape}
+              </text>
+            </g>
+            <g>
+              <rect
+                key={j}
+                stroke="black"
+                fill="#9a6fb0"
+                fillOpacity={j / 10 + 0.1}
+                x={xScale(group.data[0].toString())}
+                width={xScale.bandwidth() - 1}
+                y={yScale(group[1])}
+                height={yScale(group[0]) - yScale(group[1])}
+              />
+            </g>
+            </g>
+          );
+        })}
+      </g>
     );
   });
+
+  // const allLabels = ufoData.map((sighting, i) => {
+    // let y = series.find((d) => d.key === sighting.shape)?.find((d) => d.data[0].toString() === sighting.year)?.[1];
+  //   const x = xScale(sighting.year);
+  //   console.log(x);
+  //   y = yScale(y);
+
+  //   console.log(xScale.bandwidth())
+  //   return (
+  //     <g key={sighting.year + sighting.shape}>
+  //       <text
+  //         y={y + 80}
+  //         x={x+i}
+  //         textAnchor="end"
+  //         alignmentBaseline="central"
+  //         fontSize={12}
+  //         opacity={y > 90 ? 1 : 0}
+  //       >
+  //         {sighting.shape}
+  //       </text>
+  //     </g>
+  //   );
+  // });
 
   return (
     <>
@@ -136,6 +158,7 @@ function App() {
             >
               {allPath}
             </g>
+            {/* <g>{allLabels}</g> */}
             <g
               width={boundsWidth}
               height={boundsHeight}
