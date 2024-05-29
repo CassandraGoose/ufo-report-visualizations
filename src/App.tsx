@@ -23,9 +23,10 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [ufoData, setUfoData] = useState<Sighting[]>([]);
   const axesRef = useRef(null);
+  const chartRef = useRef(null);
   const boundsWidth = width - MARGIN.right - MARGIN.left;
   const boundsHeight = height - MARGIN.top - MARGIN.bottom;
-
+  const [zoomTransform, setZoomTransform] = useState(d3.zoomIdentity);
   useEffect(() => {
     const getData = async () => {
       const response = await fetch("./byYearsOfShapes.json");
@@ -65,13 +66,14 @@ function App() {
     return d3
       .scaleBand()
       .domain(ufoData.map((d) => d.year))
-      .range([0, boundsWidth]);
+      .range([0, boundsWidth])
+      .padding(0.1);
   }, [boundsWidth, ufoData]);
+  const xAxisGenerator = d3.axisBottom(xScale);
 
   useEffect(() => {
     const svgElement = d3.select(axesRef.current);
     svgElement.selectAll("*").remove();
-    const xAxisGenerator = d3.axisBottom(xScale);
     svgElement
       .append("g")
       .attr("transform", "translate(0," + boundsHeight + ")")
@@ -79,69 +81,72 @@ function App() {
 
     const yAxisGenerator = d3.axisLeft(yScale);
     svgElement.append("g").call(yAxisGenerator);
-  }, [xScale, yScale, boundsHeight]);
+  }, [yScale, boundsHeight, xAxisGenerator]);
+
+  useEffect(() => {
+    const svg = d3.select(chartRef.current);
+    const extent = [
+      [MARGIN.left, MARGIN.top],
+      [width - MARGIN.right, height - MARGIN.top],
+    ];
+
+    function zoomed(event: any) {
+      console.log('hi')
+      const transform = event.transform;
+        setZoomTransform(transform);
+      xScale.range([MARGIN.left, width - MARGIN.right].map(d => event.transform.applyX(d)));
+      svg.selectAll("rect").data(ufoData).attr("x", (d: any) => xScale(d.shape)).attr("width", xScale.bandwidth());
+      svg.selectAll(".x-axis").call(xAxisGenerator);
+    }
+
+    const zoom = d3
+      .zoom()
+      .scaleExtent([1, 8])
+      .translateExtent(extent)
+      .extent(extent)
+      .on("zoom", zoomed);
+
+    svg.call(zoom);
+  }, [height, width, xScale, xAxisGenerator]);
 
   const allPath = series.map((serie, i) => {
-    // let y = series.find((d) => d.key === sighting.shape)?.find((d) => d.data[0].toString() === sighting.year)?.[1];
     const sighting = ufoData.find((d) => d.shape === serie.key);
     return (
       <g key={i}>
         {serie.map((group, j) => {
           return (
-            <g>
+            <g key={j} >
               <g key={sighting!.year + sighting!.shape}>
-              <text
-                y={yScale(group[1]) + (yScale(group[0]) - yScale(group[1]))/2}
-                x={xScale(group.data[0].toString())! +((xScale.bandwidth()/2))}
-                textAnchor="middle"
-                alignmentBaseline="central"
-                fontSize={12}
-                opacity={yScale(group[1]) > 90 ? 1 : 0}
-              >
-                {sighting!.shape}
-              </text>
-            </g>
-            <g>
-              <rect
-                key={j}
-                stroke="black"
-                fill="#9a6fb0"
-                fillOpacity={j / 10 + 0.1}
-                x={xScale(group.data[0].toString())}
-                width={xScale.bandwidth() - 1}
-                y={yScale(group[1])}
-                height={yScale(group[0]) - yScale(group[1])}
-              />
-            </g>
+                <text
+                  y={
+                    yScale(group[1]) + (yScale(group[0]) - yScale(group[1])) / 2
+                  }
+                  x={xScale(group.data[0].toString())! + xScale.bandwidth() / 2}
+                  textAnchor="middle"
+                  alignmentBaseline="central"
+                  fontSize={12}
+                  opacity={yScale(group[1]) > 90 ? 1 : 0}
+                >
+                  {serie.key}
+                </text>
+              </g>
+              <g >
+                <rect
+                  stroke="black"
+                  fill="#9a6fb0"
+                  fillOpacity={j / 10 + 0.1}
+                  x={xScale(group.data[0].toString())}
+                  width={xScale.bandwidth() - 1}
+                  y={yScale(group[1])}
+                  height={yScale(group[0]) - yScale(group[1])}
+                />
+              </g>
             </g>
           );
         })}
       </g>
     );
   });
-
-  // const allLabels = ufoData.map((sighting, i) => {
-    // let y = series.find((d) => d.key === sighting.shape)?.find((d) => d.data[0].toString() === sighting.year)?.[1];
-  //   const x = xScale(sighting.year);
-  //   console.log(x);
-  //   y = yScale(y);
-
-  //   console.log(xScale.bandwidth())
-  //   return (
-  //     <g key={sighting.year + sighting.shape}>
-  //       <text
-  //         y={y + 80}
-  //         x={x+i}
-  //         textAnchor="end"
-  //         alignmentBaseline="central"
-  //         fontSize={12}
-  //         opacity={y > 90 ? 1 : 0}
-  //       >
-  //         {sighting.shape}
-  //       </text>
-  //     </g>
-  //   );
-  // });
 
   return (
     <>
@@ -150,7 +155,7 @@ function App() {
           <img className="ufo" src={ufo} alt="line art icon of ufo" />
         )}
         {!loading && (
-          <svg width={width} height={height}>
+          <svg width={width} height={height} ref={chartRef} transform={zoomTransform.toString()} >
             <g
               width={boundsWidth}
               height={boundsHeight}
@@ -158,7 +163,6 @@ function App() {
             >
               {allPath}
             </g>
-            {/* <g>{allLabels}</g> */}
             <g
               width={boundsWidth}
               height={boundsHeight}
