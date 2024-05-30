@@ -36,6 +36,19 @@
   }
 }
 
+.introduction {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding-left: 10%;
+  padding-right: 10%;
+  
+  p {
+    text-align: center;
+  }
+}
+
 .svgChartContainer {
   max-width: 100%;
   height: auto;
