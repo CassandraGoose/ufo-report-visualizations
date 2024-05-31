@@ -87,7 +87,7 @@ export default function ShapesByYearStackedHistogram({
                     opacity={yScale(group[1]) > 90 ? 1 : 0}
                     fill="#f1f1f1"
                   >
-                    {serie.key} {"hello" + canHaveLabel}
+                    {serie.key}
                   </text>
                 )}
               </g>
