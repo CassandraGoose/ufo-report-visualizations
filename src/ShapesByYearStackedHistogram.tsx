@@ -41,13 +41,20 @@ export default function ShapesByYearStackedHistogram({
       .range([boundsHeight, 0]);
   }, [boundsHeight, maxValue]);
 
+  const sortedYears = useMemo(() => {
+    return Array.from(new Set(ufoData.map((d) => d.year))).sort(
+      (a, b) => a - b
+    );
+  }, [ufoData]);
+
   const xScale = useMemo(() => {
     return d3
       .scaleBand()
-      .domain(ufoData.map((d) => d.year))
+      .domain(sortedYears)
       .range([0, boundsWidth])
       .padding(0.1);
-  }, [boundsWidth, ufoData]);
+  }, [boundsWidth, sortedYears]);
+
   const xAxisGenerator = d3.axisBottom(xScale);
 
   useEffect(() => {
@@ -58,6 +65,27 @@ export default function ShapesByYearStackedHistogram({
       .attr("class", "x-axis")
       .attr("transform", "translate(0," + boundsHeight + ")")
       .call(xAxisGenerator);
+
+    svgElement
+      .append("text")
+      .attr("class", "x-axis-title")
+      .attr("fill", "#f1f1f1")
+      .attr("text-anchor", "middle")
+      .attr(
+        "transform",
+        `translate(${boundsWidth / 2},${boundsHeight + MARGIN.bottom - 10})`
+      )
+      .text("Year");
+
+    svgElement
+      .append("text")
+      .attr("class", "y-axis-title")
+      .attr("text-anchor", "middle")
+      .attr("transform", `rotate(-90)`)
+      .attr("fill", "#f1f1f1")
+      .attr("y", -MARGIN.left + 20)
+      .attr("x", -boundsHeight / 2)
+      .text("Reported Shapes of UFO Sightings");
 
     const yAxisGenerator = d3.axisLeft(yScale);
     svgElement.append("g").call(yAxisGenerator);

@@ -7,7 +7,7 @@ import ShapesByYearStackedHistogram from './ShapesByYearStackedHistogram.tsx';
 function App() {
   const [loading, setLoading] = useState(true);
   const [ufoData, setUfoData] = useState<Sighting[]>([]);
-
+ 
   useEffect(() => {
     const getData = async () => {
       const response = await fetch("./byYearsOfShapes.json");
