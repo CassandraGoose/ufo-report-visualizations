@@ -43,7 +43,7 @@ export default function ShapesByYearStackedHistogram({
 
   const sortedYears = useMemo(() => {
     return Array.from(new Set(ufoData.map((d) => d.year))).sort(
-      (a, b) => a - b
+      (a, b) => parseInt(a) - parseInt(b)
     );
   }, [ufoData]);
 
@@ -89,7 +89,15 @@ export default function ShapesByYearStackedHistogram({
 
     const yAxisGenerator = d3.axisLeft(yScale);
     svgElement.append("g").call(yAxisGenerator);
-  }, [yScale, boundsHeight, xAxisGenerator, height, width, xScale]);
+  }, [
+    yScale,
+    boundsHeight,
+    boundsWidth,
+    xAxisGenerator,
+    height,
+    width,
+    xScale,
+  ]);
 
   const allPath = series.map((serie, i) => {
     const sighting = ufoData.find((d) => d.shape === serie.key);
@@ -140,7 +148,8 @@ export default function ShapesByYearStackedHistogram({
   });
 
   return (
-    <div ref={wrapperRef}>
+    <div ref={wrapperRef} className="flex-col">
+      <p>Reported Shapes of UFO Sightings, 2018-2023</p>
       <svg width={width} height={height} ref={chartRef}>
         <g
           width={boundsWidth}

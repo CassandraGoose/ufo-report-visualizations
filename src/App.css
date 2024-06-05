@@ -1,4 +1,4 @@
-.ufo-container {
+.animation-container {
   position: relative;
   width: 100vw;
   height: 100vh; 
@@ -36,11 +36,11 @@
   }
 }
 
+.hidden {
+  display: none;
+}
+
 .introduction {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
   padding-left: 10%;
   padding-right: 10%;
   
@@ -52,4 +52,11 @@
 .svgChartContainer {
   max-width: 100%;
   height: auto;
+}
+
+.flex-col {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
