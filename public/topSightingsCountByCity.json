@@ -1,0 +1,38 @@
+[
+  {
+    "city": "Phoenix",
+    "count": 786
+  },
+  {
+    "city": "Seattle",
+    "count": 746
+  },
+  {
+    "city": "Las Vegas",
+    "count": 663
+  },
+  {
+    "city": "Portland",
+    "count": 661
+  },
+  {
+    "city": "New York City ",
+    "count": 621
+  },
+  {
+    "city": "Los Angeles",
+    "count": 567
+  },
+  {
+    "city": "San Diego",
+    "count": 554
+  },
+  {
+    "city": "Tucson",
+    "count": 473
+  },
+  {
+    "city": "Chicago",
+    "count": 451
+  }
+]

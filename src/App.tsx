@@ -3,16 +3,23 @@ import "./App.css";
 import ufo from "./assets/ufo.png";
 import { Sighting } from "./interfaces";
 import ShapesByYearStackedHistogram from "./ShapesByYearStackedHistogram.tsx";
+import TopSightingsByCountCity from "./TopSightingsByCountCity.tsx";
 
 function App() {
   const [loading, setLoading] = useState(true);
-  const [ufoData, setUfoData] = useState<Sighting[]>([]);
+  const [shapesByYearData, setShapesByYearData] = useState<Sighting[]>([]);
+  const [topSightingsCountByCityData, setStopSightingsCountByCityData] = useState<{ city: string, count: number }[]>([]);
 
   useEffect(() => {
+    //todo make this dry
     const getData = async () => {
-      const response = await fetch("./byYearsOfShapes.json");
-      const data = await response.json();
-      setUfoData(data);
+      const shapesResponse = await fetch("./shapesByYear.json");
+      const shapesData = await shapesResponse.json();
+      setShapesByYearData(shapesData);
+
+      const topCountsResponse = await fetch("./topSightingsCountByCity.json");
+      const topCountsData = await topCountsResponse.json();
+      setStopSightingsCountByCityData(topCountsData);
     };
 
     getData();
@@ -37,7 +44,8 @@ function App() {
           <img className="ufo" src={ufo} alt="line art icon of ufo" />
         )}
       </div>
-      {!loading && <ShapesByYearStackedHistogram ufoData={ufoData} />}
+      {!loading && <ShapesByYearStackedHistogram ufoData={shapesByYearData} />}
+      {!loading && <TopSightingsByCountCity ufoData={topSightingsCountByCityData} />}
     </>
   );
 }
