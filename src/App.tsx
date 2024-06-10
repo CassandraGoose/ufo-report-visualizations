@@ -61,7 +61,7 @@ function App() {
             This app utilizes data from the National UFO Reporting Center Online
             Database. We do our best to appropriately clean data, but due to the
             nature of reporting, some data may be unintentionally skewed due to
-            how people fill out the form.
+            how people fill out the form. Be advised that accessibility may be limited at this time, as I relearn D3. I want to fix it ASAP!
           </p>
 
           <ChartCard>
