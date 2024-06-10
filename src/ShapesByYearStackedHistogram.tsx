@@ -2,19 +2,20 @@ import { useRef, useEffect, useMemo } from "react";
 import * as d3 from "d3";
 import { Sighting } from "./interfaces";
 
-const MARGIN = { top: 50, right: 50, bottom: 60, left: 80 };
-
 export default function ShapesByYearStackedHistogram({
   ufoData,
+  boundsWidth,
+  boundsHeight,
+  MARGIN,
 }: {
   ufoData: Sighting[];
+  boundsWidth: number;
+  boundsHeight: number;
+  MARGIN: { top: number; right: number; bottom: number; left: number };
 }) {
-  const { innerWidth: width, innerHeight: height } = window;
   const axesRef = useRef(null);
   const chartRef = useRef(null);
   const wrapperRef = useRef(null);
-  const boundsWidth = width - MARGIN.right - MARGIN.left;
-  const boundsHeight = height - MARGIN.top - MARGIN.bottom;
 
   const keys = d3.union(ufoData.map((d) => d.shape));
 
@@ -60,11 +61,13 @@ export default function ShapesByYearStackedHistogram({
   useEffect(() => {
     const svgElement = d3.select(axesRef.current);
     svgElement.selectAll("*").remove();
-    svgElement
+    const xAxis = svgElement
       .append("g")
       .attr("class", "x-axis")
       .attr("transform", "translate(0," + boundsHeight + ")")
       .call(xAxisGenerator);
+
+    xAxis.selectAll("text").attr("font-size", 14);
 
     svgElement
       .append("text")
@@ -75,10 +78,12 @@ export default function ShapesByYearStackedHistogram({
         "transform",
         `translate(${boundsWidth / 2},${boundsHeight + MARGIN.bottom - 10})`
       )
+      .attr("font-size", "20")
       .text("Year");
 
     svgElement
       .append("text")
+      .attr("font-size", "20")
       .attr("class", "y-axis-title")
       .attr("text-anchor", "middle")
       .attr("transform", `rotate(-90)`)
@@ -88,16 +93,10 @@ export default function ShapesByYearStackedHistogram({
       .text("Reported Shapes of UFO Sightings");
 
     const yAxisGenerator = d3.axisLeft(yScale);
-    svgElement.append("g").call(yAxisGenerator);
-  }, [
-    yScale,
-    boundsHeight,
-    boundsWidth,
-    xAxisGenerator,
-    height,
-    width,
-    xScale,
-  ]);
+    const yAxis = svgElement.append("g").call(yAxisGenerator);
+
+    yAxis.selectAll("text").attr("font-size", 14);
+  }, [yScale, boundsHeight, boundsWidth, xAxisGenerator, xScale, MARGIN.bottom, MARGIN.left]);
 
   const allPath = series.map((serie, i) => {
     const sighting = ufoData.find((d) => d.shape === serie.key);
@@ -112,14 +111,14 @@ export default function ShapesByYearStackedHistogram({
                   <text
                     y={
                       yScale(group[1]) +
-                      (yScale(group[0]) - yScale(group[1]) + 5) / 2
+                      (yScale(group[0]) - yScale(group[1]) + 7) / 2
                     }
                     x={
                       xScale(group.data[0].toString())! + xScale.bandwidth() / 2
                     }
                     textAnchor="middle"
                     alignmentBaseline="central"
-                    fontSize={12}
+                    fontSize={14}
                     opacity={yScale(group[1]) > 90 ? 1 : 0}
                     fill="#f1f1f1"
                   >
@@ -129,9 +128,9 @@ export default function ShapesByYearStackedHistogram({
               </g>
               <g>
                 <rect
-                  stroke="black"
-                  fill="#9a6fb0"
-                  fillOpacity={j / 10 + 0.1}
+                  stroke="white"
+                  fill="white"
+                  fillOpacity={0.1}
                   x={xScale(group.data[0].toString())}
                   width={xScale.bandwidth() - 1}
                   y={yScale(group[1])}
@@ -149,21 +148,21 @@ export default function ShapesByYearStackedHistogram({
 
   return (
     <div ref={wrapperRef} className="flex-col">
-      <p>Reported Shapes of UFO Sightings, 2018-2023</p>
-      <svg width={width} height={height} ref={chartRef}>
+      <p className="font-important chart-title">Reported UFO Shapes by Year, 2018-2023</p>
+      <p>Ability to zoom coming soon. Hover for tooltip information.</p>
+      <svg viewBox={`-20 0 ${boundsWidth + 150} ${boundsHeight + 120}`} ref={chartRef}>
         <g
-          width={boundsWidth}
+          width={boundsWidth -200}
           height={boundsHeight}
           transform={`translate(${[MARGIN.left, MARGIN.top].join(",")})`}
         >
           {allPath}
-        </g>
         <g
           width={boundsWidth}
           height={boundsHeight}
           ref={axesRef}
-          transform={`translate(${[MARGIN.left, MARGIN.top].join(",")})`}
         />
+        </g>
       </svg>
     </div>
   );

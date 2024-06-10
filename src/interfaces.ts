@@ -9,3 +9,7 @@ export interface Sighting {
   explanation: null | string;
   count: number;
 }
+
+export interface SightingCounts {
+  [key: string]: number | string;
+}
