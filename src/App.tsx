@@ -2,9 +2,10 @@ import { useState, useEffect } from "react";
 import "./App.css";
 import ufo from "./assets/ufo.png";
 import { Sighting } from "./interfaces";
-import ShapesByYearStackedHistogram from "./ShapesByYearStackedHistogram.tsx";
-import TopSightingsByCountCity from "./TopSightingsByCountCity.tsx";
-import ChartCard from "./ChartCard.tsx";
+import ShapesByYearStackedHistogram from "./Charts/ShapesByYearStackedHistogram.tsx";
+import TopSightingsByCountCity from "./Charts/TopSightingsByCountCity.tsx";
+import ChartCard from "./Components/ChartCard.tsx";
+import ShapesIn2023 from "./Charts/ShapesIn2023.tsx";
 
 const MARGIN = { top: 50, right: 50, bottom: 60, left: 80 };
 
@@ -13,13 +14,13 @@ function App() {
   const [shapesByYearData, setShapesByYearData] = useState<Sighting[]>([]);
   const [topSightingsCountByCityData, setStopSightingsCountByCityData] =
     useState<{ city: string; count: number }[]>([]);
+  const [shapesIn2023Data, setShapesIn2023Data] = useState<{[shape:string]: number}[]>([]);
   const { innerWidth: width, innerHeight: height } = window;
   const boundsWidth = width - MARGIN.right - MARGIN.left;
   const boundsHeight = height - MARGIN.top - MARGIN.bottom;
 
   const scaleFactor = Math.min(boundsWidth / width, boundsHeight / height);
 
-  // Adjust MARGIN based on scaleFactor
   const scaledMargin = {
     top: MARGIN.top * scaleFactor,
     right: MARGIN.right * scaleFactor,
@@ -37,6 +38,12 @@ function App() {
       const topCountsResponse = await fetch("./topSightingsCountByCity.json");
       const topCountsData = await topCountsResponse.json();
       setStopSightingsCountByCityData(topCountsData);
+
+      const shapesIn2023Response = await fetch(
+        "./2023UfoShapes.json"
+      );
+      const shapes2023Data = await shapesIn2023Response.json();
+      setShapesIn2023Data(shapes2023Data);
     };
 
     getData();
@@ -52,7 +59,9 @@ function App() {
       </div>
       {!loading && (
         <div className="nav flex-row white-space-padding">
-          <h1 className="font-important title">Reported UFO Sightings Visualized</h1>
+          <h1 className="font-important title">
+            Reported UFO Sightings Visualized
+          </h1>
         </div>
       )}
       {!loading && (
@@ -61,7 +70,8 @@ function App() {
             This app utilizes data from the National UFO Reporting Center Online
             Database. We do our best to appropriately clean data, but due to the
             nature of reporting, some data may be unintentionally skewed due to
-            how people fill out the form. Be advised that accessibility may be limited at this time, as I relearn D3. I want to fix it ASAP!
+            how people fill out the form. Be advised that accessibility may be
+            limited at this time, as I relearn D3. I want to fix it ASAP!
           </p>
 
           <ChartCard>
@@ -76,6 +86,15 @@ function App() {
           <ChartCard>
             <TopSightingsByCountCity
               ufoData={topSightingsCountByCityData}
+              boundsWidth={boundsWidth}
+              boundsHeight={boundsHeight}
+              MARGIN={scaledMargin}
+            />
+          </ChartCard>
+
+          <ChartCard>
+            <ShapesIn2023
+              ufoData={shapesIn2023Data}
               boundsWidth={boundsWidth}
               boundsHeight={boundsHeight}
               MARGIN={scaledMargin}

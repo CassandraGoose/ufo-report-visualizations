@@ -1,0 +1,102 @@
+[
+  {
+    "shape": "diamond",
+    "count": 53
+  },
+  {
+    "shape": "circle",
+    "count": 564
+  },
+  {
+    "shape": "unknown",
+    "count": 288
+  },
+  {
+    "shape": "disk",
+    "count": 182
+  },
+  {
+    "shape": "orb",
+    "count": 569
+  },
+  {
+    "shape": "cigar",
+    "count": 132
+  },
+  {
+    "shape": "light",
+    "count": 668
+  },
+  {
+    "shape": "oval",
+    "count": 156
+  },
+  {
+    "shape": "star",
+    "count": 80
+  },
+  {
+    "shape": "changing",
+    "count": 259
+  },
+  {
+    "shape": "fireball",
+    "count": 117
+  },
+  {
+    "shape": "other",
+    "count": 227
+  },
+  {
+    "shape": "triangle",
+    "count": 262
+  },
+  {
+    "shape": "sphere",
+    "count": 194
+  },
+  {
+    "shape": "chevron",
+    "count": 63
+  },
+  {
+    "shape": "cylinder",
+    "count": 126
+  },
+  {
+    "shape": "cube",
+    "count": 37
+  },
+  {
+    "shape": "teardrop",
+    "count": 21
+  },
+  {
+    "shape": "egg",
+    "count": 51
+  },
+  {
+    "shape": "flash",
+    "count": 49
+  },
+  {
+    "shape": "formation",
+    "count": 134
+  },
+  {
+    "shape": "rectangle",
+    "count": 97
+  },
+  {
+    "shape": "cone",
+    "count": 15
+  },
+  {
+    "shape": "cross",
+    "count": 23
+  },
+  {
+    "shape": "unlisted",
+    "count": 12
+  }
+]

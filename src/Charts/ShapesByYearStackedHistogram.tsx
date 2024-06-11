@@ -1,6 +1,6 @@
 import { useRef, useEffect, useMemo } from "react";
 import * as d3 from "d3";
-import { Sighting } from "./interfaces";
+import { Sighting } from "../interfaces";
 
 export default function ShapesByYearStackedHistogram({
   ufoData,

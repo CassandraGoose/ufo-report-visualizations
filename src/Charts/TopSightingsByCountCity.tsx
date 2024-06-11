@@ -1,6 +1,6 @@
 import { useMemo, useRef, useEffect } from "react";
 import * as d3 from "d3";
-import { SightingCounts } from "./interfaces";
+import { SightingCounts } from "../interfaces";
 
 export default function TopSightingsByCountCity({
   ufoData,
