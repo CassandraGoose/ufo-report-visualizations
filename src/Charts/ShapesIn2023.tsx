@@ -17,16 +17,14 @@ export default function ShapesIn2023({
 
   const pie = useMemo(() => {
     const pieGen = d3.pie().value((d) => { 
-      console.log('d', d);
       
       return d.count});
-    console.log('generator', pieGen(ufoData));
     return pieGen(ufoData);
   }, [ufoData]);
 
   const arc = d3.arc();
 
-  const slices = pie.map((slice, i) => {
+  const slices = pie.sort((a, b) => b.data.count - a.data.count).map((slice, i) => {
     const sliceInfo = {
       innerRadius: 0,
       outerRadius: radius,
@@ -50,9 +48,12 @@ export default function ShapesIn2023({
     const labelX = legendCenter[0] + 50 * (isRightLeaning ? 1 : -1);
     const textAnchor = isRightLeaning ? "start" : "end";
     const label = `${slice.data.shape} - ${slice.data.count}`;
-    // make legend lines longer according to smaller size? 
+    const staggeredY = legendCenter[1] + (i - (pie.length / 2)) * -20;
+    const yLength = slice.data.count < 90 ? staggeredY : legendCenter[1];
+    const flatYLocation = slice.data.count < 90 ? staggeredY : legendCenter[1];
     // figure out colors you want to use and finmd the d3 system to implement those
 
+    
     return (
       <g key={label}>
         <path d={path} fill="white" stroke="white" stroke-width="4" opacity="0.1" />
@@ -61,21 +62,21 @@ export default function ShapesIn2023({
           x1={center[0]}
           y1={center[1]}
           x2={legendCenter[0]}
-          y2={legendCenter[1]}
+          y2={yLength}
           stroke={"white"}
           fill={"white"}
         />
         <line
           x1={legendCenter[0]}
-          y1={legendCenter[1]}
+          y1={flatYLocation}
           x2={labelX}
-          y2={legendCenter[1]}
+          y2={flatYLocation}
           stroke={"white"}
           fill={"white"}
         />
         <text
           x={labelX + (isRightLeaning ? 2 : -2)}
-          y={legendCenter[1]}
+          y={flatYLocation}
           textAnchor={textAnchor}
           dominantBaseline="middle"
           fill="white"
@@ -89,7 +90,7 @@ export default function ShapesIn2023({
 
   return (
     <div>
-      <svg viewBox={`-20 0 ${boundsWidth + 150} ${boundsHeight + 120}`}>
+      <svg viewBox={`-100 -200 ${boundsWidth + 150} ${boundsHeight + 220}`}>
         <g transform={`translate(${boundsWidth / 2}, ${boundsHeight / 2})`}>
           {slices}
         </g>
