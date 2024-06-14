@@ -96,3 +96,22 @@
   font-weight: 400;
   font-style: normal;
 }
+
+.pie .slice {
+  transition-duration: 0.2s;
+  transition-property: filter, opacity;
+  filter: saturate(100%);
+  opacity: 1;
+  cursor: pointer;
+}
+
+.pie.slice-active .slice {
+  filter: saturate(50%);
+  opacity: 0.5;
+}
+
+.pie.slice-active .slice:hover {
+  filter: saturate(100%);
+  opacity: 1;
+}
+

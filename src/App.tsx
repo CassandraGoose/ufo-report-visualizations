@@ -6,6 +6,7 @@ import ShapesByYearStackedHistogram from "./Charts/ShapesByYearStackedHistogram.
 import TopSightingsByCountCity from "./Charts/TopSightingsByCountCity.tsx";
 import ChartCard from "./Components/ChartCard.tsx";
 import ShapesIn2023 from "./Charts/ShapesIn2023.tsx";
+import * as d3 from "d3";
 
 const MARGIN = { top: 50, right: 50, bottom: 60, left: 80 };
 
@@ -18,6 +19,7 @@ function App() {
   const { innerWidth: width, innerHeight: height } = window;
   const boundsWidth = width - MARGIN.right - MARGIN.left;
   const boundsHeight = height - MARGIN.top - MARGIN.bottom;
+  const colors = d3.interpolateRainbow;
 
   const scaleFactor = Math.min(boundsWidth / width, boundsHeight / height);
 
@@ -98,6 +100,7 @@ function App() {
               boundsWidth={boundsWidth}
               boundsHeight={boundsHeight}
               MARGIN={scaledMargin}
+              colors={colors}
             />
           </ChartCard>
         </div>
