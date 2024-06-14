@@ -82,6 +82,7 @@ function App() {
               boundsWidth={boundsWidth}
               boundsHeight={boundsHeight}
               MARGIN={scaledMargin}
+              colors={colors}
             />
           </ChartCard>
 
@@ -91,6 +92,7 @@ function App() {
               boundsWidth={boundsWidth}
               boundsHeight={boundsHeight}
               MARGIN={scaledMargin}
+              colors={colors}
             />
           </ChartCard>
 

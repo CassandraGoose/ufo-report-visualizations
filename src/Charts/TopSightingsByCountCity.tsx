@@ -7,11 +7,13 @@ export default function TopSightingsByCountCity({
   boundsWidth,
   boundsHeight,
   MARGIN,
+  colors
 }: {
   ufoData: SightingCounts[];
   boundsWidth: number;
   boundsHeight: number;
   MARGIN: { top: number; right: number; bottom: number; left: number };
+  colors: (t: number) => string;
 }) {
   const axesRef = useRef(null);
 
@@ -59,7 +61,7 @@ export default function TopSightingsByCountCity({
       .text("Count of Reported Sightings");
   });
 
-  const bars = ufoData.map((sighting) => {
+  const bars = ufoData.map((sighting, i) => {
     const y = yScale(sighting.city);
 
     if (y === undefined) return null;
@@ -72,8 +74,8 @@ export default function TopSightingsByCountCity({
           height={yScale.bandwidth()}
           opacity={0.7}
           stroke="white"
-          fill="white"
-          fillOpacity={0.2}
+          fill={colors(i * 0.06)}
+          fillOpacity={0.4}
           strokeWidth={1}
           rx={1}
         />

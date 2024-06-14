@@ -7,11 +7,13 @@ export default function ShapesByYearStackedHistogram({
   boundsWidth,
   boundsHeight,
   MARGIN,
+  colors,
 }: {
   ufoData: Sighting[];
   boundsWidth: number;
   boundsHeight: number;
   MARGIN: { top: number; right: number; bottom: number; left: number };
+  colors: (t: number) => string;
 }) {
   const axesRef = useRef(null);
   const chartRef = useRef(null);
@@ -129,8 +131,9 @@ export default function ShapesByYearStackedHistogram({
               <g>
                 <rect
                   stroke="white"
-                  fill="white"
-                  fillOpacity={0.1}
+                  stroke-width="0.5"
+                  fill={colors(i * 0.06)} 
+                  fillOpacity={0.3}
                   x={xScale(group.data[0].toString())}
                   width={xScale.bandwidth() - 1}
                   y={yScale(group[1])}

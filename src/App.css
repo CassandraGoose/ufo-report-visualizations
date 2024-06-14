@@ -101,13 +101,13 @@
   transition-duration: 0.2s;
   transition-property: filter, opacity;
   filter: saturate(100%);
-  opacity: 1;
+  opacity: 0.7;
   cursor: pointer;
 }
 
 .pie.slice-active .slice {
   filter: saturate(50%);
-  opacity: 0.5;
+  opacity: 0.4;
 }
 
 .pie.slice-active .slice:hover {
