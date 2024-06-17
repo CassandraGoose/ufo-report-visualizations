@@ -27,4 +27,4 @@ As I have time, I'll add more charts to illustrate various stories that I see in
 </div>
 
 ## Check Out My Progress:
-![Animated gif of website in use](https://i.imgur.com/PWLJSIA.gif)
+[Desktop Visualization Site](https://nuforc-ufo-reports-data-visualizations.vercel.app/)
