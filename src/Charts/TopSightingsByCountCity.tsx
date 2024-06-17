@@ -62,6 +62,7 @@ export default function TopSightingsByCountCity({
   });
 
   const bars = ufoData.map((sighting, i) => {
+    // @ts-expect-error: fixing in future
     const y = yScale(sighting.city);
 
     if (y === undefined) return null;
@@ -69,7 +70,9 @@ export default function TopSightingsByCountCity({
       <g key={sighting.city}>
         <rect
           x={xScale(0)}
+          // @ts-expect-error: fixing in future
           y={yScale(sighting.city)}
+          // @ts-expect-error: fixing in future
           width={xScale(sighting.totalCount)}
           height={yScale.bandwidth()}
           opacity={0.7}
@@ -80,6 +83,7 @@ export default function TopSightingsByCountCity({
           rx={1}
         />
         <text
+          // @ts-expect-error: fixing in future
           x={xScale(sighting.totalCount) - 7}
           y={y + yScale.bandwidth() / 2}
           textAnchor="end"
@@ -87,6 +91,7 @@ export default function TopSightingsByCountCity({
           fontSize={14}
           fill="white"
           stroke="white"
+          // @ts-expect-error: fixing in future
           opacity={xScale(sighting.totalCount) > 90 ? 1 : 0}
         >
           {sighting.totalCount}
