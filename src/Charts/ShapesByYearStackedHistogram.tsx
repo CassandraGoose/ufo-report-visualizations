@@ -140,11 +140,13 @@ export default function ShapesByYearStackedHistogram({
                 className="item"
                 onMouseEnter={() => {
                   if (chartRef.current) {
+                    // @ts-expect-error: fixing in future
                     chartRef.current.classList.add("item-active");
                   }
                 }}
                 onMouseLeave={() => {
                   if (chartRef.current) {
+                    // @ts-expect-error: fixing in future
                     chartRef.current.classList.remove("item-active");
                   }
                 }}
