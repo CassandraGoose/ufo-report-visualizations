@@ -60,15 +60,15 @@ export default function ShapesIn2023({
       return (
         <g
           key={label}
-          className="slice"
+          className="item"
           onMouseEnter={() => {
             if (chartRef.current) {
-              chartRef.current.classList.add("slice-active");
+              chartRef.current.classList.add("item-active");
             }
           }}
           onMouseLeave={() => {
             if (chartRef.current) {
-              chartRef.current.classList.remove("slice-active");
+              chartRef.current.classList.remove("item-active");
             }
           }}
         >
@@ -117,7 +117,7 @@ export default function ShapesIn2023({
         <g
           ref={chartRef}
           transform={`translate(${boundsWidth / 2}, ${boundsHeight / 2})`}
-          className="pie"
+          className="chart"
         >
           {slices}
         </g>

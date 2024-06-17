@@ -97,7 +97,7 @@
   font-style: normal;
 }
 
-.pie .slice {
+.chart .item {
   transition-duration: 0.2s;
   transition-property: filter, opacity;
   filter: saturate(100%);
@@ -105,12 +105,12 @@
   cursor: pointer;
 }
 
-.pie.slice-active .slice {
+.chart.item-active .item {
   filter: saturate(50%);
   opacity: 0.4;
 }
 
-.pie.slice-active .slice:hover {
+.chart.item-active .item:hover {
   filter: saturate(100%);
   opacity: 1;
 }

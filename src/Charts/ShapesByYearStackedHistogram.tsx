@@ -98,7 +98,15 @@ export default function ShapesByYearStackedHistogram({
     const yAxis = svgElement.append("g").call(yAxisGenerator);
 
     yAxis.selectAll("text").attr("font-size", 14);
-  }, [yScale, boundsHeight, boundsWidth, xAxisGenerator, xScale, MARGIN.bottom, MARGIN.left]);
+  }, [
+    yScale,
+    boundsHeight,
+    boundsWidth,
+    xAxisGenerator,
+    xScale,
+    MARGIN.bottom,
+    MARGIN.left,
+  ]);
 
   const allPath = series.map((serie, i) => {
     const sighting = ufoData.find((d) => d.shape === serie.key);
@@ -128,11 +136,23 @@ export default function ShapesByYearStackedHistogram({
                   </text>
                 )}
               </g>
-              <g>
+              <g
+                className="item"
+                onMouseEnter={() => {
+                  if (chartRef.current) {
+                    chartRef.current.classList.add("item-active");
+                  }
+                }}
+                onMouseLeave={() => {
+                  if (chartRef.current) {
+                    chartRef.current.classList.remove("item-active");
+                  }
+                }}
+              >
                 <rect
                   stroke="white"
-                  stroke-width="0.5"
-                  fill={colors(i * 0.06)} 
+                  strokeWidth="0.5"
+                  fill={colors(i * 0.06)}
                   fillOpacity={0.3}
                   x={xScale(group.data[0].toString())}
                   width={xScale.bandwidth() - 1}
@@ -151,20 +171,20 @@ export default function ShapesByYearStackedHistogram({
 
   return (
     <div ref={wrapperRef} className="flex-col">
-      <p className="font-important chart-title">Reported UFO Shapes by Year, 2018-2023</p>
+      <p className="font-important chart-title">
+        Reported UFO Shapes by Year, 2018-2023
+      </p>
       <p>Ability to zoom coming soon. Hover for tooltip information.</p>
-      <svg viewBox={`-20 0 ${boundsWidth + 150} ${boundsHeight + 120}`} ref={chartRef}>
+      <svg viewBox={`-20 0 ${boundsWidth + 150} ${boundsHeight + 120}`}>
         <g
-          width={boundsWidth -200}
+          ref={chartRef}
+          className="chart"
+          width={boundsWidth - 200}
           height={boundsHeight}
           transform={`translate(${[MARGIN.left, MARGIN.top].join(",")})`}
         >
           {allPath}
-        <g
-          width={boundsWidth}
-          height={boundsHeight}
-          ref={axesRef}
-        />
+          <g width={boundsWidth} height={boundsHeight} ref={axesRef} />
         </g>
       </svg>
     </div>
