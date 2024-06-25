@@ -3,9 +3,9 @@ import "./App.css";
 import ufo from "./assets/ufo.png";
 import { Sighting } from "./interfaces";
 import ShapesByYearStackedHistogram from "./Charts/ShapesByYearStackedHistogram.tsx";
-import TopSightingsByCountCity from "./Charts/TopSightingsByCountCity.tsx";
+import TopSightingsByCountCityHorizontalBar from "./Charts/TopSightingsByCountCityHorizontalBar.tsx";
 import ChartCard from "./Components/ChartCard.tsx";
-import ShapesIn2023 from "./Charts/ShapesIn2023.tsx";
+import ShapesIn2023Pie from "./Charts/ShapesIn2023Pie.tsx";
 import * as d3 from "d3";
 
 const MARGIN = { top: 50, right: 50, bottom: 60, left: 80 };
@@ -87,7 +87,7 @@ function App() {
           </ChartCard>
 
           <ChartCard>
-            <TopSightingsByCountCity
+            <TopSightingsByCountCityHorizontalBar
               ufoData={topSightingsCountByCityData}
               boundsWidth={boundsWidth}
               boundsHeight={boundsHeight}
@@ -97,7 +97,7 @@ function App() {
           </ChartCard>
 
           <ChartCard>
-            <ShapesIn2023
+            <ShapesIn2023Pie
               ufoData={shapesIn2023Data}
               boundsWidth={boundsWidth}
               boundsHeight={boundsHeight}

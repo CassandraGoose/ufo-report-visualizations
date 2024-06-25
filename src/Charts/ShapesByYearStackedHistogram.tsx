@@ -114,28 +114,11 @@ export default function ShapesByYearStackedHistogram({
       <g key={i}>
         {serie.map((group, j) => {
           const canHaveLabel = group[1] - group[0] > 150;
+          const xLocation =
+            xScale(group.data[0].toString())! + xScale.bandwidth() / 2;
+
           return (
             <g key={j}>
-              <g key={sighting!.year + sighting!.shape}>
-                {canHaveLabel && (
-                  <text
-                    y={
-                      yScale(group[1]) +
-                      (yScale(group[0]) - yScale(group[1]) + 7) / 2
-                    }
-                    x={
-                      xScale(group.data[0].toString())! + xScale.bandwidth() / 2
-                    }
-                    textAnchor="middle"
-                    alignmentBaseline="central"
-                    fontSize={14}
-                    opacity={yScale(group[1]) > 90 ? 1 : 0}
-                    fill="#f1f1f1"
-                  >
-                    {serie.key}
-                  </text>
-                )}
-              </g>
               <g
                 className="item"
                 onMouseEnter={() => {
@@ -151,6 +134,71 @@ export default function ShapesByYearStackedHistogram({
                   }
                 }}
               >
+                <g key={sighting!.year + sighting!.shape}>
+                  {canHaveLabel ? (
+                    <text
+                      y={
+                        yScale(group[1]) +
+                        (yScale(group[0]) - yScale(group[1]) + 7) / 2
+                      }
+                      x={
+                        xScale(group.data[0].toString())! +
+                        xScale.bandwidth() / 2
+                      }
+                      textAnchor="middle"
+                      alignmentBaseline="central"
+                      fontSize={14}
+                      opacity={yScale(group[1]) > 90 ? 1 : 0}
+                      fill="#f1f1f1"
+                    >
+                      {serie.key}
+                    </text>
+                  ) : (
+                    <g className="line-label">
+                      <text
+                        x={xLocation}
+                        y={
+                          yScale(group[1]) +
+                          (yScale(group[0]) - yScale(group[1])) / -2 -
+                          40
+                        }
+                        textAnchor={"middle"}
+                        dominantBaseline="middle"
+                        fill="white"
+                        fontSize={14}
+                      >
+                        {serie.key}
+                      </text>
+                      <line
+                        x1={xLocation}
+                        y1={
+                          yScale(group[1]) +
+                          (yScale(group[0]) - yScale(group[1])) / -2 -
+                          30
+                        }
+                        x2={xLocation}
+                        y2={
+                          yScale(group[1]) +
+                          (yScale(group[0]) - yScale(group[1]) + 7) / 2 -
+                          3
+                        }
+                        stroke={"white"}
+                        fill={"white"}
+                      />
+                      <circle
+                        cx={xLocation}
+                        r={2}
+                        cy={
+                          yScale(group[1]) +
+                          (yScale(group[0]) - yScale(group[1]) + 7) / 2 -
+                          3
+                        }
+                        stroke="white"
+                        fill="white"
+                      />
+                    </g>
+                  )}
+                </g>
                 <rect
                   stroke="white"
                   strokeWidth="0.5"
@@ -176,7 +224,7 @@ export default function ShapesByYearStackedHistogram({
       <p className="font-important chart-title">
         Reported UFO Shapes by Year, 2018-2023
       </p>
-      <p>Ability to zoom coming soon. Hover for tooltip information.</p>
+      <p>Hover for labels.</p>
       <svg viewBox={`-20 0 ${boundsWidth + 150} ${boundsHeight + 120}`}>
         <g
           ref={chartRef}
